@@ -396,6 +396,10 @@ NeM_results <- rep(0,length(sizes))
 NeF_results <- rep(0,length(sizes))
 NeA_results <- rep(0,length(sizes))
 
+vSucM_results <- rep(0,length(sizes))
+vSucF_results  <- rep(0,length(sizes))
+vSucA_results  <- rep(0,length(sizes))
+
 reps <- 100 # Number of replicates
 
 for(z in 1:length(sizes)){
@@ -404,9 +408,14 @@ for(z in 1:length(sizes)){
   
   RunsMales <- matrix(data = 0, nrow = reps, ncol = N/2) # matrix of males
   
+  # Storing Ne results for each runs
   RunsNeM <- rep(0,reps)
   RunsNeF <- rep(0,reps)
   RunsNeA <- rep(0,reps)
+  
+  vSucM <- rep(0,reps)
+  vSucF <- rep(0,reps)
+  vSucA <- rep(0,reps)
   
   for(k in 1:reps){
     ##### Program ####
@@ -566,13 +575,23 @@ for(z in 1:length(sizes)){
     RunsNeM[k] <- NeM # Stores male Ne
     RunsNeF[k] <- NeF # Stores female Ne
     RunsNeA[k] <- NeA # Stores autosome Ne
+    
+    ### Storing variances in reproductive success
+    vSucM[k] <- var(males[2,])
+    vSucF[k] <- var(fList)
+    vSucA[k] <- var(alist)
+    
   }
   NeM_results[z] <- mean(RunsNeM) # Mean NeM of all runs
   NeF_results[z] <- mean(RunsNeF) # Mean NeF of all runs
   NeA_results[z] <- mean(RunsNeA) # Mean NeA of all runs
+  
+  vSucM_results[z] <- mean(vSucM) # Mean vSucM of all runs
+  vSucF_results[z]  <- mean(vSucF) # Mean vSucF of all runs
+  vSucA_results[z]  <- mean(vSucA) # Mean vSucA of all runs
 }
 
-### Plotting results
+### Plotting effective pop results
 # Plots will have to be adjusted depending on parameters
 # Export with size (4.3H X 5W)
 
@@ -587,6 +606,40 @@ points(x=seq(1000,10000,by=1000),y=NeM_results,pch=21,col="black",bg="white")
 
 legend(1000,10000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,1),col=c("blue","black","black"),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,.85))
 
+
+## Plotting variances in reproductive success
+plot(x=seq(1000,10000,by=1000),y=vSucA_results,pch=16,xlab=NA,ylab=NA,cex.axis=.75,col="blue",ylim=c(0,12))
+lines(x=seq(1000,10000,by=1000),y=vSucA_results,col="blue")
+
+lines(x=seq(1000,10000,by=1000),y=vSucF_results,lty=1)
+points(x=seq(1000,10000,by=1000),y=vSucF_results,pch=16)
+
+lines(x=seq(1000,10000,by=1000),y=vSucM_results,lty=1)
+points(x=seq(1000,10000,by=1000),y=vSucM_results,pch=21,col="black",bg="white")
+
+
+legend(7000,12,c("Males","Total Population","Females"),pch=c(1,16,16),col=c("black","blue","black"),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(.85,1,1))
+
+
+mtext(side = 1, line = 2.5, 'Realized population size',cex=.9)
+mtext(side = 2, line = 2.5, 'Variance in reproductive success',cex=.9)
+
+
+
+## Plotting differences variances in reproductive success
+plot((x=seq(100,3000,by=100)/10000),y=(vSucM_results/vSucF_results),pch=16,xlab=NA,ylab=NA,cex.axis=.75,col="black",ylim=c(0,4))
+lines((x=seq(100,3000,by=100)/10000),y=(vSucM_results/vSucF_results),col="black")
+
+#Vr <- vRatio(.5)
+#abline(h = Vr,col="black")
+
+lines((x=seq(100,3000,by=100)/10000),y=(vSucF_results/vSucA_results),lty=1,col="blue")
+points((x=seq(100,3000,by=100)/10000),y=(vSucF_results/vSucA_results),pch=16,col="blue")
+
+mtext(side = 1, line = 2.5, 'Density',cex=.9)
+mtext(side = 2, line = 2.5, expression(alpha),cex=.9,adj=.4)
+mtext(side = 2, line = 2.5, expression(Beta),cex=.9,adj=.6,col="blue")
+mtext(side = 2, line = 2.5, "or",cex=.9,adj=.5)
 
 
 ###########################################################
