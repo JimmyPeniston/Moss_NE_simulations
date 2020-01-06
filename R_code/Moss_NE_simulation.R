@@ -1271,4 +1271,32 @@ axis(2,seq(0,11000,by=2000),cex.axis=.75,padj=-.5)
 
 legend(1,11000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,1),col=c("blue","black","black"),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,.85))
 
+###########################################################
+##### Calculating ratios of variances in success ##########
+###########################################################
 
+# Parameter values
+mu <- 10^-8 # mutation rate
+N <- 400000 # realized population size
+U <- 0.005 # theta of U
+V <- 0.0025
+A <- 0.01
+lambda <- V/U
+
+# Function giving alpha:
+# Ratio of variance in U to V
+vRatio <- function(x){
+  ((8*mu*((N-1)/(x*U)))-2) / ((8*mu*((N-1)/(U)))-2)
+}
+
+# Testing
+vRatio(.5)
+
+# Function giving Beta:
+# Ratio of variance in U to A
+vRatioA <- function(x){
+  ((8*mu*((N-1)/(x*A)))-2) / ((8*mu*(((2*N)-1)/(A)))-2)
+}
+
+# Testing
+vRatioA(.5)
