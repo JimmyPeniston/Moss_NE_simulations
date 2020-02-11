@@ -593,18 +593,21 @@ for(z in 1:length(sizes)){
 
 ### Plotting effective pop results
 # Plots will have to be adjusted depending on parameters
-# Export with size (4.3H X 5W)
+# Export with size (4.2H X 5W)
 
-plot(x=seq(1000,10000,by=1000),y=NeA_results,pch=16,xlab="Realized population size",ylab="Effective population size",cex.axis=.75,col="blue")
-lines(x=seq(1000,10000,by=1000),y=NeA_results,col="blue")
+plot(x=seq(1000,10000,by=1000),y=NeA_results,pch=16,xlab=NA,ylab=NA,cex.axis=.75,col="black")
+lines(x=seq(1000,10000,by=1000),y=NeA_results,col="black",lwd=1.5)
 
-lines(x=seq(1000,10000,by=1000),y=NeF_results,lty=1)
-points(x=seq(1000,10000,by=1000),y=NeF_results,pch=16)
+lines(x=seq(1000,10000,by=1000),y=NeF_results,lty=1,col=colors[7],lwd=1.5)
+points(x=seq(1000,10000,by=1000),y=NeF_results,pch=16,col=colors[7])
 
-lines(x=seq(1000,10000,by=1000),y=NeM_results,lty=1)
-points(x=seq(1000,10000,by=1000),y=NeM_results,pch=21,col="black",bg="white")
+lines(x=seq(1000,10000,by=1000),y=NeM_results,lty=1,col=colors[6],lwd=1.5)
+points(x=seq(1000,10000,by=1000),y=NeM_results,pch=16,col=colors[6])
 
-legend(1000,10000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,1),col=c("blue","black","black"),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,.85))
+mtext(side = 1, line = 2.3, 'Population size',cex=1)
+mtext(side = 2, line = 2.3, 'Effective population size',cex=1)
+
+legend(1000,10000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,bty="n",pt.cex = c(1,1,1))
 
 
 ## Plotting variances in reproductive success
@@ -1049,8 +1052,22 @@ box(which="plot")
 # Plots the results
 
 # Vector of sizes to evaluate
-sizesM <- c(5400,5250,5000,4500,3000,1500,1000,750,600) # males
-sizesF <- c(600,750,1000,1500,3000,4500,5000,5250,5400) # females
+
+### N = 2000
+#sizesM <- c(1800,1750,1667,1500,1000,500,333,250,200) # males
+#sizesF <- c(200,250,333,500,1000,1500,1667,1750,1800) # females
+
+### N = 4000
+#sizesM <- c(3600,3500,3334,3000,2000,1000,666,500,400) # males
+#sizesF <- c(400,500,666,1000,2000,3000,3334,3500,3600) # females
+
+### N = 6000
+#sizesM <- c(5400,5250,5000,4500,3000,1500,1000,750,600) # males
+#sizesF <- c(600,750,1000,1500,3000,4500,5000,5250,5400) # females
+
+### N = 8000
+sizesM <- c(7200,7000,6667,6000,4000,2000,1333,1000,800) # males
+sizesF <- c(800,1000,1333,2000,4000,6000,6667,7000,7200) # females
 
 # Vectors for storing results of different runs
 NeM_results <- rep(0,length(sizesM))
@@ -1256,20 +1273,141 @@ for(z in 1:length(sizesM)){
 
 
 
-plot(x=seq(1,9,by=1),y=NeF_results,pch=16,xlab="Females:Males",ylab="Effective population size",cex.axis=.75,ylim=c(0,11000),yaxt="n",xaxt="n")
-lines(x=seq(1,9,by=1),y=NeF_results)
+plot(x=seq(1,9,by=1),y=NeF_results,pch=16,xlab="Females:Males",ylab="Effective population size",cex.axis=.75,ylim=c(0,4000),yaxt="n",xaxt="n",col=colors[7])
+lines(x=seq(1,9,by=1),y=NeF_results,col=colors[7])
 
-lines(x=seq(1,9,by=1),y=NeM_results,lty=1)
-points(x=seq(1,9,by=1),y=NeM_results,pch=21,col="black",bg="white")
+lines(x=seq(1,9,by=1),y=NeM_results,lty=1,col=colors[6])
+points(x=seq(1,9,by=1),y=NeM_results,pch=16,col=colors[6])
 
-lines(x=seq(1,9,by=1),y=NeA_results,lty=1,col="blue")
-points(x=seq(1,9,by=1),y=NeA_results,pch=16,col="blue")
+lines(x=seq(1,9,by=1),y=NeA_results,lty=1,col="black")
+points(x=seq(1,9,by=1),y=NeA_results,pch=16,col="black")
 
 xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
 axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.75,padj=-.5)
-axis(2,seq(0,11000,by=2000),cex.axis=.75,padj=-.5)
+axis(2,seq(0,4000,by=1000),cex.axis=.75,padj=-.5)
 
-legend(1,11000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,1),col=c("blue","black","black"),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,.85))
+legend(1,4000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[6],colors[7]),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,1))
+
+
+########### Multipanel figure of sex ratio effect with
+########### different densities
+# Need to run the "full simulation" above for each density
+
+dev.off()
+par(mfrow=c(2,2))
+par(mar= c(2.1, 2.1, 2.1, 1))
+par(oma=c(1,1,1,1))
+
+#### N 2000
+#NeF_2000 <- NeF_results
+#NeM_2000 <- NeM_results
+#NeA_2000 <- NeA_results
+
+plot(x=seq(1,9,by=1),y=NeF_2000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,4000),yaxt="n",xaxt="n",col=colors[7])
+lines(x=seq(1,9,by=1),y=NeF_2000,col=colors[7])
+
+lines(x=seq(1,9,by=1),y=NeM_2000,lty=1,col=colors[6])
+points(x=seq(1,9,by=1),y=NeM_2000,pch=16,col=colors[6])
+
+lines(x=seq(1,9,by=1),y=NeA_2000,lty=1,col="black")
+points(x=seq(1,9,by=1),y=NeA_2000,pch=16,col="black")
+
+xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
+axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
+axis(2,seq(0,4000,by=1000),cex.axis=.6,padj=1)
+
+mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
+mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
+
+legend(1,4200,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",pt.cex = c(1,1,1))
+
+mtext(side = 3, line = .25, expression(paste(italic(N)," = 2000")),cex=.7)
+
+
+
+#### N 4000
+#NeF_4000 <- NeF_results
+#NeM_4000 <- NeM_results
+#NeA_4000 <- NeA_results
+
+plot(x=seq(1,9,by=1),y=NeF_4000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,8000),yaxt="n",xaxt="n",col=colors[7])
+lines(x=seq(1,9,by=1),y=NeF_4000,col=colors[7])
+
+lines(x=seq(1,9,by=1),y=NeM_4000,lty=1,col=colors[6])
+points(x=seq(1,9,by=1),y=NeM_4000,pch=16,col=colors[6])
+
+lines(x=seq(1,9,by=1),y=NeA_4000,lty=1,col="black")
+points(x=seq(1,9,by=1),y=NeA_4000,pch=16,col="black")
+
+xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
+axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
+axis(2,seq(0,8000,by=2000),cex.axis=.6,padj=1)
+
+mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
+mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
+
+legend(1,8200,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",pt.cex = c(1,1,1))
+
+mtext(side = 3, line = .25, expression(paste(italic(N)," = 4000")),cex=.7)
+
+
+
+#### N 6000
+#NeF_6000 <- NeF_results
+#NeM_6000 <- NeM_results
+#NeA_6000 <- NeA_results
+
+plot(x=seq(1,9,by=1),y=NeF_6000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,12000),yaxt="n",xaxt="n",col=colors[7])
+lines(x=seq(1,9,by=1),y=NeF_6000,col=colors[7])
+
+lines(x=seq(1,9,by=1),y=NeM_6000,lty=1,col=colors[6])
+points(x=seq(1,9,by=1),y=NeM_6000,pch=16,col=colors[6])
+
+lines(x=seq(1,9,by=1),y=NeA_6000,lty=1,col="black")
+points(x=seq(1,9,by=1),y=NeA_6000,pch=16,col="black")
+
+xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
+axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
+axis(2,seq(0,12000,by=4000),cex.axis=.6,padj=1)
+
+mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
+mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
+
+legend(1,13000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,1))
+
+mtext(side = 3, line = .25, expression(paste(italic(N)," = 6000")),cex=.7)
+
+
+
+
+#### N 8000
+#NeF_8000 <- NeF_results
+#NeM_8000 <- NeM_results
+#NeA_8000 <- NeA_results
+
+plot(x=seq(1,9,by=1),y=NeF_8000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,16000),yaxt="n",xaxt="n",col=colors[7])
+lines(x=seq(1,9,by=1),y=NeF_8000,col=colors[7])
+
+lines(x=seq(1,9,by=1),y=NeM_8000,lty=1,col=colors[6])
+points(x=seq(1,9,by=1),y=NeM_8000,pch=16,col=colors[6])
+
+lines(x=seq(1,9,by=1),y=NeA_8000,lty=1,col="black")
+points(x=seq(1,9,by=1),y=NeA_8000,pch=16,col="black")
+
+xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
+axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
+axis(2,seq(0,16000,by=4000),cex.axis=.55,padj=1.2)
+
+mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
+mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
+
+legend(1,17000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,1))
+
+mtext(side = 3, line = .25, expression(paste(italic(N)," = 8000")),cex=.7)
+
+
+
+
 
 ###########################################################
 ##### Calculating ratios of variances in success ##########
