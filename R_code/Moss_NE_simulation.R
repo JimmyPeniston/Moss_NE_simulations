@@ -33,7 +33,7 @@ aCols <- 100 # Number of columns in spatial grid
 # Create empty spatial grid called "arena"
 arena <- matrix(data = " ", nrow = aRows, ncol = aCols, byrow = FALSE, dimnames = NULL) 
 
-N <- 6000 # population size, must be even  number because I assume an equal sex ratio
+N <- 3000 # population size, must be even  number because I assume an equal sex ratio
 
 # Randomly selecting locations of individuals on grid
 locs <- sample(seq(1,(aRows*aCols),by=1),N,replace=FALSE)
@@ -164,6 +164,7 @@ for(i in 1:length(females)){
 }
 
 #### Plotting final arena ####
+# Figure S1
 x1=melt(arena)
 names(x1)=c("x","y","value")
 levels(x1$value)=c("Empty","Unmated Female","Male","Mated Female")
@@ -389,7 +390,9 @@ box(which="plot")
 # Plots the results
 
 # Vector of pop sizes to evaluate (must be even numbers)
-sizes <- seq(1000,10000,by=1000)
+
+sizes <- seq(1000,5000,by=500) # sizes used in Figure 1A
+# sizes <- seq(10,3010,by=100) # sizes used in Figure 1B
 
 # Vectors for storing results of different runs
 NeM_results <- rep(0,length(sizes))
@@ -559,17 +562,17 @@ for(z in 1:length(sizes)){
     males[2,]<- sapply(males[2,],(function(x){x*s1}))
     
     # Calculating male (V chromosome) effective pop size
-    NeM <- ((2*N) - 2) / (2+var(males[2,]))
+    NeM <- ((.5*N) - 1) / (var(males[2,]))
     
     # Applying scaler s1 to females 
     fList <- c(rep(s1,fM),rep(0,(N/2)-fM))
     
     # Calculating male (U chromosome) effective pop size
-    NeF <-  ((2*N) - 2) / (2+var(fList))
+    NeF <-  ((.5*N) - 1) / (var(fList))
     
     # Calculating autosome effective population size
     alist <- c(males[2,],fList) # list of whole pop
-    NeA <- ((4*N) - 2) / (2+var(alist))
+    NeA <- ((4*NeF*NeM) / (NeF + NeM))
     
     RunsMales[k,] <- (males[2,]/s1) # stores males values
     RunsNeM[k] <- NeM # Stores male Ne
@@ -591,58 +594,54 @@ for(z in 1:length(sizes)){
   vSucA_results[z]  <- mean(vSucA) # Mean vSucA of all runs
 }
 
-### Plotting effective pop results
+#### Density Figures ####
+## Figure 1 is made by combining the Figure 1A below with Figure 1B in the sex ratio section below in Illustrator
+## Figure 4 is made by combining the Figure 4B below with Figure 4A in the sex ratio section below
+# The "Full simulation" code above needs to be run to make these figures
+
+## Figure 1A
+# Effective populations sizes
 # Plots will have to be adjusted depending on parameters
 # Export with size (4.2H X 5W)
 
-plot(x=seq(1000,10000,by=1000),y=NeA_results,pch=16,xlab=NA,ylab=NA,cex.axis=.75,col="black")
-lines(x=seq(1000,10000,by=1000),y=NeA_results,col="black",lwd=1.5)
+plot(x=seq(1000,5000,by=500),y=NeF_results,pch=15,xlab=NA,ylab=NA,cex.axis=.75,xlim=c(1000,5000),ylim=c(0,5400))
+lines(x=seq(1000,5000,by=500),y=NeF_results,lwd=1)
 
-lines(x=seq(1000,10000,by=1000),y=NeF_results,lty=1,col=colors[7],lwd=1.5)
-points(x=seq(1000,10000,by=1000),y=NeF_results,pch=16,col=colors[7])
+lines(x=seq(1000,5000,by=500),y=NeA_results,lty=1,lwd=1)
+points(x=seq(1000,5000,by=500),y=NeA_results,pch=16)
 
-lines(x=seq(1000,10000,by=1000),y=NeM_results,lty=1,col=colors[6],lwd=1.5)
-points(x=seq(1000,10000,by=1000),y=NeM_results,pch=16,col=colors[6])
+lines(x=seq(1000,5000,by=500),y=NeM_results,lty=1,lwd=1)
+points(x=seq(1000,5000,by=500),y=NeM_results,pch=17)
 
-mtext(side = 1, line = 2.3, 'Population size',cex=1)
+abline(coef = c(0,1), y = c(1000,5000),lty=2,col="gray70",lwd=1.5)
+mtext(side = 1, line = 2.3, 'Census population size',cex=1)
 mtext(side = 2, line = 2.3, 'Effective population size',cex=1)
 
-legend(1000,10000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,bty="n",pt.cex = c(1,1,1))
+legend(x=1000,y=5400,c("Autosome","U chromosome","V chromosome"),pch=c(16,15,17),cex=.75,box.lwd=F,y.intersp=.5,bty="n",pt.cex = c(1,1,1))
 
 
-## Plotting variances in reproductive success
-plot(x=seq(1000,10000,by=1000),y=vSucA_results,pch=16,xlab=NA,ylab=NA,cex.axis=.75,col="blue",ylim=c(0,12))
-lines(x=seq(1000,10000,by=1000),y=vSucA_results,col="blue")
+## Figure 4B
+# Ratios of variances in reproductive success
+# Plots will have to be adjusted depending on parameters
+# Export with size (4.2H X 5W)
 
-lines(x=seq(1000,10000,by=1000),y=vSucF_results,lty=1)
-points(x=seq(1000,10000,by=1000),y=vSucF_results,pch=16)
-
-lines(x=seq(1000,10000,by=1000),y=vSucM_results,lty=1)
-points(x=seq(1000,10000,by=1000),y=vSucM_results,pch=21,col="black",bg="white")
-
-
-legend(7000,12,c("Males","Total Population","Females"),pch=c(1,16,16),col=c("black","blue","black"),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(.85,1,1))
-
-
-mtext(side = 1, line = 2.5, 'Realized population size',cex=.9)
-mtext(side = 2, line = 2.5, 'Variance in reproductive success',cex=.9)
-
-
-
-## Plotting differences variances in reproductive success
-plot((x=seq(100,3000,by=100)/10000),y=(vSucM_results/vSucF_results),pch=16,xlab=NA,ylab=NA,cex.axis=.75,col="black",ylim=c(0,4))
-lines((x=seq(100,3000,by=100)/10000),y=(vSucM_results/vSucF_results),col="black")
+plot((x=seq(10,3010,by=100)/10000),y=(vSucM_results/vSucF_results),pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,5))
+lines((x=seq(10,3010,by=100)/10000),y=(vSucM_results/vSucF_results))
 
 #Vr <- vRatio(.5)
 #abline(h = Vr,col="black")
 
-lines((x=seq(100,3000,by=100)/10000),y=(vSucF_results/vSucA_results),lty=1,col="blue")
-points((x=seq(100,3000,by=100)/10000),y=(vSucF_results/vSucA_results),pch=16,col="blue")
+lines((x=seq(10,3010,by=100)/10000),y=(vSucM_results/(vSucM_results+vSucF_results)),lty=1)
+points((x=seq(10,3010,by=100)/10000),y=(vSucM_results/(vSucM_results+vSucF_results)),pch=15,cex=.9)
 
 mtext(side = 1, line = 2.5, 'Density',cex=.9)
 mtext(side = 2, line = 2.5, expression(alpha),cex=.9,adj=.4)
-mtext(side = 2, line = 2.5, expression(Beta),cex=.9,adj=.6,col="blue")
+mtext(side = 2, line = 2.5, expression(Beta),cex=.9,adj=.6)
+
 mtext(side = 2, line = 2.5, "or",cex=.9,adj=.5)
+
+legend(x=0,y=5.0,c(expression(alpha),expression(beta)),pch=c(16,15),cex=.75,box.lwd=F,y.intersp=.5,bty="n",pt.cex = c(.8,.7))
+
 
 
 ###########################################################
@@ -1053,9 +1052,13 @@ box(which="plot")
 
 # Vector of sizes to evaluate
 
+### N = 1000
+#sizesM <- c(900,875,833,750,500,250,167,125,100) # males
+#sizesF <- c(100,125,167,250,500,750,833,875,900) # females
+
 ### N = 2000
-#sizesM <- c(1800,1750,1667,1500,1000,500,333,250,200) # males
-#sizesF <- c(200,250,333,500,1000,1500,1667,1750,1800) # females
+sizesM <- c(1800,1750,1667,1500,1000,500,333,250,200) # males
+sizesF <- c(200,250,333,500,1000,1500,1667,1750,1800) # females
 
 ### N = 4000
 #sizesM <- c(3600,3500,3334,3000,2000,1000,666,500,400) # males
@@ -1066,8 +1069,12 @@ box(which="plot")
 #sizesF <- c(600,750,1000,1500,3000,4500,5000,5250,5400) # females
 
 ### N = 8000
-sizesM <- c(7200,7000,6667,6000,4000,2000,1333,1000,800) # males
-sizesF <- c(800,1000,1333,2000,4000,6000,6667,7000,7200) # females
+#sizesM <- c(7200,7000,6667,6000,4000,2000,1333,1000,800) # males
+#sizesF <- c(800,1000,1333,2000,4000,6000,6667,7000,7200) # females
+
+vSucM_results <- rep(0,length(sizesM))
+vSucF_results  <- rep(0,length(sizesF))
+vSucA_results  <- rep(0,length(sizesF+sizesM))
 
 # Vectors for storing results of different runs
 NeM_results <- rep(0,length(sizesM))
@@ -1079,7 +1086,7 @@ reps <- 100 # Number of replicates
 for(z in 1:length(sizesM)){
   
   N <- sizesM[z] + sizesF[z] # total population size
-
+  
   NM <- sizesM[z] # number of males
   NF <- sizesF[z] # number of females
   
@@ -1088,6 +1095,10 @@ for(z in 1:length(sizesM)){
   RunsNeM <- rep(0,reps)
   RunsNeF <- rep(0,reps)
   RunsNeA <- rep(0,reps)
+  
+  vSucM <- rep(0,reps)
+  vSucF <- rep(0,reps)
+  vSucA <- rep(0,reps)
   
   for(k in 1:reps){
     ##### Program ####
@@ -1248,193 +1259,145 @@ for(z in 1:length(sizesM)){
     males[2,]<- sapply(males[2,],(function(x){x*s1}))
     
     # Calculating male (V chromosome) effective pop size
-    NeM <- ((4*NM) - 2) / (2+var(males[2,]))
+    NeM <- (NM - 1) / (var(males[2,]))
     
     # Applying scaler s1 to females 
-    fList <- c(rep(s1,fM),rep(0,(NF)-fM))
+    fList <- c(rep(s1,fM),rep(0,(NF-fM)))
     
     # Calculating male (U chromosome) effective pop size
-    NeF <-  ((4*NF) - 2) / (2+var(fList))
+    NeF <-  (NF - 1) / (var(fList))
     
     # Calculating autosome effective population size
     alist <- c(males[2,],fList) # list of whole pop
-    NeA <- ((4*N) - 2) / (2+var(alist))
+    NeA <- ((4*NeF*NeM) / (NeF + NeM))
     
     RunsMales[k,] <- (males[2,]/s1) # stores males values
     RunsNeM[k] <- NeM # Stores male Ne
     RunsNeF[k] <- NeF # Stores female Ne
     RunsNeA[k] <- NeA # Stores autosome Ne
+    
+    ### Storing variances in reproductive success
+    vSucM[k] <- var(males[2,])
+    vSucF[k] <- var(fList)
   }
   
   NeM_results[z] <- mean(RunsNeM) # Mean NeM of all runs
   NeF_results[z] <- mean(RunsNeF) # Mean NeF of all runs
   NeA_results[z] <- mean(RunsNeA) # Mean NeA of all runs
+  
+  vSucM_results[z] <- mean(vSucM) # Mean vSucM of all runs
+  vSucF_results[z]  <- mean(vSucF) # Mean vSucF of all runs
+  vSucA_results[z]  <- mean(vSucA) # Mean vSucA of all runs
 }
 
 
+#### Sex Ratio Figures ####
+## Figure 1 is made by combining the Figure 1B below with Figure 1A above in Illustrator
+## Figure 4 is made by combining the Figure 4B below with Figure 4A above in Illustrator
+# The "Full simulation" code above needs to be run to make these figures
 
-plot(x=seq(1,9,by=1),y=NeF_results,pch=16,xlab="Females:Males",ylab="Effective population size",cex.axis=.75,ylim=c(0,4000),yaxt="n",xaxt="n",col=colors[7])
-lines(x=seq(1,9,by=1),y=NeF_results,col=colors[7])
+## Figure 1B
+# Effective populations sizes
+# Plots will have to be adjusted depending on parameters
+# Export with size (4.2H X 5W)
+plot(x=seq(1,7,by=1),y=NeF_results[2:8],pch=15,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,5000),yaxt="n",xaxt="n")
+lines(x=seq(1,7,by=1),y=NeF_results[2:8],lwd=1)
 
-lines(x=seq(1,9,by=1),y=NeM_results,lty=1,col=colors[6])
-points(x=seq(1,9,by=1),y=NeM_results,pch=16,col=colors[6])
+lines(x=seq(1,7,by=1),y=NeM_results[2:8],lty=1,lwd=1)
+points(x=seq(1,7,by=1),y=NeM_results[2:8],pch=17)
 
-lines(x=seq(1,9,by=1),y=NeA_results,lty=1,col="black")
-points(x=seq(1,9,by=1),y=NeA_results,pch=16,col="black")
+lines(x=seq(1,7,by=1),y=NeA_results[2:8],lty=1,lwd=1)
+points(x=seq(1,7,by=1),y=NeA_results[2:8],pch=16)
+
+xlabs = c("1:7","1:5","1:3","1:1","3:1","5:1","7:1")
+axis(1,seq(1,7,by=1),labels=xlabs,cex.axis=.75,padj=-.5)
+axis(2,seq(0,5000,by=1000),cex.axis=.75,padj=-.5)
+
+abline(h=2000,lty=2,col="gray70",lwd=1.5)
+legend(1,5000,c("Autosome","U chromosome","V chromosome"),pch=c(16,15,17),cex=.75,box.lwd=F,y.intersp=.5,bty="n",pt.cex = c(1,1,1))
+
+mtext(side = 1, line = 2.3, "Females:Males",cex=1)
+mtext(side = 2, line = 2.3, 'Effective population size',cex=1)
+
+### Figure 4B (without empirical values)
+# Ratios of variance in reproductive success figure
+# To add empirical values, see the section below
+# Export with size (4.2H X 5W)
+
+plot(x=seq(1,9,by=1),y=(vSucM_results/vSucF_results),pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,10),yaxt="n",xaxt="n")
+lines(x=seq(1,9,by=1),y=(vSucM_results/vSucF_results))
 
 xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
 axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.75,padj=-.5)
-axis(2,seq(0,4000,by=1000),cex.axis=.75,padj=-.5)
-
-legend(1,4000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[6],colors[7]),cex=.75,box.lwd=F,y.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,1))
-
-
-########### Multipanel figure of sex ratio effect with
-########### different densities
-# Need to run the "full simulation" above for each density
-
-dev.off()
-par(mfrow=c(2,2))
-par(mar= c(2.1, 2.1, 2.1, 1))
-par(oma=c(1,1,1,1))
-
-#### N 2000
-#NeF_2000 <- NeF_results
-#NeM_2000 <- NeM_results
-#NeA_2000 <- NeA_results
-
-plot(x=seq(1,9,by=1),y=NeF_2000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,4000),yaxt="n",xaxt="n",col=colors[7])
-lines(x=seq(1,9,by=1),y=NeF_2000,col=colors[7])
-
-lines(x=seq(1,9,by=1),y=NeM_2000,lty=1,col=colors[6])
-points(x=seq(1,9,by=1),y=NeM_2000,pch=16,col=colors[6])
-
-lines(x=seq(1,9,by=1),y=NeA_2000,lty=1,col="black")
-points(x=seq(1,9,by=1),y=NeA_2000,pch=16,col="black")
-
-xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
-axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
-axis(2,seq(0,4000,by=1000),cex.axis=.6,padj=1)
-
-mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
-mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
-
-legend(1,4200,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",pt.cex = c(1,1,1))
-
-mtext(side = 3, line = .25, expression(paste(italic(N)," = 2000")),cex=.7)
-
-
-
-#### N 4000
-#NeF_4000 <- NeF_results
-#NeM_4000 <- NeM_results
-#NeA_4000 <- NeA_results
-
-plot(x=seq(1,9,by=1),y=NeF_4000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,8000),yaxt="n",xaxt="n",col=colors[7])
-lines(x=seq(1,9,by=1),y=NeF_4000,col=colors[7])
-
-lines(x=seq(1,9,by=1),y=NeM_4000,lty=1,col=colors[6])
-points(x=seq(1,9,by=1),y=NeM_4000,pch=16,col=colors[6])
-
-lines(x=seq(1,9,by=1),y=NeA_4000,lty=1,col="black")
-points(x=seq(1,9,by=1),y=NeA_4000,pch=16,col="black")
-
-xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
-axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
-axis(2,seq(0,8000,by=2000),cex.axis=.6,padj=1)
-
-mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
-mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
-
-legend(1,8200,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",pt.cex = c(1,1,1))
-
-mtext(side = 3, line = .25, expression(paste(italic(N)," = 4000")),cex=.7)
-
-
-
-#### N 6000
-#NeF_6000 <- NeF_results
-#NeM_6000 <- NeM_results
-#NeA_6000 <- NeA_results
-
-plot(x=seq(1,9,by=1),y=NeF_6000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,12000),yaxt="n",xaxt="n",col=colors[7])
-lines(x=seq(1,9,by=1),y=NeF_6000,col=colors[7])
-
-lines(x=seq(1,9,by=1),y=NeM_6000,lty=1,col=colors[6])
-points(x=seq(1,9,by=1),y=NeM_6000,pch=16,col=colors[6])
-
-lines(x=seq(1,9,by=1),y=NeA_6000,lty=1,col="black")
-points(x=seq(1,9,by=1),y=NeA_6000,pch=16,col="black")
-
-xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
-axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
-axis(2,seq(0,12000,by=4000),cex.axis=.6,padj=1)
-
-mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
-mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
-
-legend(1,13000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,1))
-
-mtext(side = 3, line = .25, expression(paste(italic(N)," = 6000")),cex=.7)
-
-
-
-
-#### N 8000
-#NeF_8000 <- NeF_results
-#NeM_8000 <- NeM_results
-#NeA_8000 <- NeA_results
-
-plot(x=seq(1,9,by=1),y=NeF_8000,pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,16000),yaxt="n",xaxt="n",col=colors[7])
-lines(x=seq(1,9,by=1),y=NeF_8000,col=colors[7])
-
-lines(x=seq(1,9,by=1),y=NeM_8000,lty=1,col=colors[6])
-points(x=seq(1,9,by=1),y=NeM_8000,pch=16,col=colors[6])
-
-lines(x=seq(1,9,by=1),y=NeA_8000,lty=1,col="black")
-points(x=seq(1,9,by=1),y=NeA_8000,pch=16,col="black")
-
-xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
-axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.6,padj=-1.3)
-axis(2,seq(0,16000,by=4000),cex.axis=.55,padj=1.2)
-
-mtext(side = 1, line = 1.5, 'Females:Males',cex=.6)
-mtext(side = 2, line = 1.5, 'Effective population size',cex=.6)
-
-legend(1,17000,c("Autosome","U chromosome","V chromosome"),pch=c(16,16,16),col=c("black",colors[7],colors[6]),cex=.75,box.lwd=F,y.intersp=.5,x.intersp=.5,bty="n",seg.len=3,pt.cex = c(1,1,1))
-
-mtext(side = 3, line = .25, expression(paste(italic(N)," = 8000")),cex=.7)
-
-
+axis(2,seq(0,10,by=2),cex.axis=.75,padj=-.5)
+mtext(side = 1, line = 2.3, "Females:Males",cex=1)
 
 
 
 ###########################################################
 ##### Calculating ratios of variances in success ##########
+#####               from empirical data          ##########          
 ###########################################################
+# Empirical values
+Ta = 0.01 # Theta A
+Tu = 0.0034 # Theta U
+Tv = 0.0025 # Theta V
+Nm = 360000  # Male census pop size
+Nf = 40000 # Female census pop size
+muVU = 1.0 # ratio of the mutation rate of the V and U chromosomes
+muVA = 1.0 # ratio of the mutation rate of the V chromosomes and autosomes
 
-# Parameter values
-mu <- 10^-8 # mutation rate
-N <- 400000 # realized population size
-U <- 0.005 # theta of U
-V <- 0.0025
-A <- 0.01
-lambda <- V/U
+alpha <- (muVU*Tu*(Nm - 1)) / (Tv*(Nf-1))
+beta <- (Ta*muVA)/(4*Tv)
+gamma <- (Ta*muVA) / (4*(Nf-1))
 
-# Function giving alpha:
-# Ratio of variance in U to V
-vRatio <- function(x){
-  ((8*mu*((N-1)/(x*U)))-2) / ((8*mu*((N-1)/(U)))-2)
-}
+### Calculate empirical alpha values for each each sex ratio used in simulations
+# Need to add each point manually by changing sex ratio above
 
-# Testing
-vRatio(.5)
+#aList <- rep(0,9)
+aList[9] <- alpha
 
-# Function giving Beta:
-# Ratio of variance in U to A
-vRatioA <- function(x){
-  ((8*mu*((N-1)/(x*A)))-2) / ((8*mu*(((2*N)-1)/(A)))-2)
-}
 
-# Testing
-vRatioA(.5)
+#### Figure 4B #####
+# Ratios in reproductive success figure
+# Need to run "Full Simulation" code for sex ratios above
+# Export with size (4.2H X 5W)
+
+plot(x=seq(1,9,by=1),y=(vSucM_results/vSucF_results),pch=16,xlab=NA,ylab=NA,cex.axis=.75,ylim=c(0,14),yaxt="n",xaxt="n")
+lines(x=seq(1,9,by=1),y=(vSucM_results/vSucF_results))
+
+xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
+axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.75,padj=-.5)
+axis(2,seq(0,14,by=2),cex.axis=.75,padj=-.5)
+mtext(side = 1, line = 2.3, "Females:Males",cex=1)
+
+
+lines(aList[1:9])
+points(aList[1:9],cex=.9)
+points(aList[1:9],cex=.7,col="white",pch=16)
+mtext(side = 2, line = 2.5, expression(alpha),cex=.9)
+
+### Plotting gamma values
+# Need to run "Full Simulation" code for sex ratios above
+
+sizesM <- c(1800,1750,1667,1500,1000,500,333,250,200) # males
+sizesF <- c(200,250,333,500,1000,1500,1667,1750,1800) # females
+
+### Calculate empirical gamma values for each each sex ratio used in simulations
+# Need to add each point manually by changing sex ratio above
+#gData <- rep(0,9)
+gData[4] <- gamma
+
+gSim = vSucM_results / ((vSucM_results*(sizesF-1))+(vSucF_results*(sizesM-1))) # simulation gamma values
+
+# plotting
+plot(x=seq(1,9,by=1),y=gSim,pch=16,xlab=NA,ylab=NA,cex.axis=.75,yaxt="n",xaxt="n",ylim=c(0,.0007))
+lines(x=seq(1,9,by=1),y=gSim)
+
+lines(x=seq(1,9,by=1),y=gData)
+
+xlabs = c("1:9","1:7","1:5","1:3","1:1","3:1","5:1","7:1","9:1")
+axis(1,seq(1,9,by=1),labels=xlabs,cex.axis=.75,padj=-.5)
+axis(2,seq(0,14,by=2),cex.axis=.75,padj=-.5)
+mtext(side = 1, line = 2.3, "Females:Males",cex=1)
+
